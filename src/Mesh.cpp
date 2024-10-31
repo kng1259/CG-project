@@ -531,7 +531,6 @@ void Mesh::CreateWheel(int nSegment, int hands, float fHeight, float fOORadius, 
     float alpha = 360 / (hands + 0);
     for (int i = 0; i < hands; i++)
     {
-        printf("angle = %f\n", alpha * i);
         auto pt0 = rotatePointYAxis(fOIRadius, fHeight / 2, fIORadius / 4, alpha * i);
         auto pt1 = rotatePointYAxis(fOIRadius, fHeight / 2, -fIORadius / 4, alpha * i);
         auto pt2 = rotatePointYAxis(fOIRadius, -fHeight / 2, -fIORadius / 4, alpha * i);
