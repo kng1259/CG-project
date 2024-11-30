@@ -39,6 +39,9 @@ float rotatef = 0.0;
 bool bRotate = false;
 bool bPlus = true;
 
+// Wireframe toggle
+float bWireFrame = false;
+
 void drawObject() {
   // translate whole object so its bottom is on Oxz plane
   glPushMatrix();
@@ -49,16 +52,25 @@ void drawObject() {
   glPushMatrix();
   glTranslatef(0, -2.3, 0);
   shape.CreateCuboid(1.0, 0.2, 3);
-  shape.DrawColor(1);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(1);
   glPopMatrix();
 
   // Shape 1
   glPushMatrix();
   shape.CreateShape1(0.5, 0.6, 0.3, 0.4, 3, 0.4, 0.2);
   glTranslatef(0, 0, -2.5);
-  shape.DrawColor(2);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(2);
   glTranslatef(0, 0, 5);
-  shape.DrawColor(2);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(2);
   glPopMatrix();
 
   // Shape 2
@@ -66,9 +78,15 @@ void drawObject() {
   glRotatef(90, 1, 0, 0);
   glRotatef(90, 0, 1, 0);
   shape.CreateShape2(0.8, 0.3, 0.5, 4.0, 0.3);
-  shape.DrawColor(3);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(3);
   glRotatef(180, 1, 0, 0);
-  shape.DrawColor(3);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(3);
   glPopMatrix();
 
   // Cylinder
@@ -76,7 +94,10 @@ void drawObject() {
   glTranslatef(0.3, 0, 0);
   glRotatef(90, 0, 0, 1);
   shape.CreateCylinder(50, 0.6, 0.2);
-  shape.DrawColor(7);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(7);
   glPopMatrix();
 
   // Wheel
@@ -85,37 +106,58 @@ void drawObject() {
   glRotatef(90, 0, 0, 1);
   glRotatef(rotatef, 0, 1, 0);
   shape.CreateWheel(50, 5, 0.2, 1.5, 1, 0.5, 0.2);
-  shape.DrawColor(5);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(5);
 
   // Small cylinder
   glTranslatef(-1.3, -0.3, 0);
-  shape.CreateCylinder(50, 0.6, 0.1);
-  shape.DrawColor(4);
+  shape.CreateCylinder(20, 0.6, 0.1);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(4);
   glPopMatrix();
 
   // Shape 4
   glPushMatrix();
   glTranslatef(0.8, 0, translatezf);
   shape.CreateShape4(0.2, 0.4, 3.4, 0.2, 0.2, 3.2);
-  shape.DrawColor(0);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(0);
   glPopMatrix();
 
   // Support
   glPushMatrix();
   glTranslatef(0.55, 0, 2.5);
   shape.CreateCuboid(0.45, 0.15, 0.15);
-  shape.DrawColor(1);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(1);
   glTranslatef(0, 0, -5);
-  shape.DrawColor(1);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(1);
   glPopMatrix();
 
   glPushMatrix();
   glRotatef(90, 1, 0, 0);
   glTranslatef(0.8, 2.2 + translatezf, 0);
-  shape.CreateCylinder(50, 4.0, 0.1);
-  shape.DrawColor(4);
+  shape.CreateCylinder(20, 4.0, 0.1);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(4);
   glTranslatef(0, -4.4, 0);
-  shape.DrawColor(4);
+  if (bWireFrame)
+    shape.DrawWireframe();
+  else
+    shape.DrawColor(4);
   glPopMatrix();
 
   glPopMatrix();
@@ -242,6 +284,10 @@ void myKeyboard(unsigned char key, int x, int y) {
   case 'B':
     bPlus = !bPlus;
     break;
+  case 'w':
+  case 'W':
+    bWireFrame = !bWireFrame;
+    break;
   case 27:
     bRotate = false;
     exit(0);
@@ -308,6 +354,7 @@ int main(int argc, char *argv[]) {
   cout << "1, 2: to rotate the wheel." << endl;
   cout << "A, a: to toggle rotating the wheel." << endl;
   cout << "B, b: to change auto wheel rotation direction." << endl;
+  cout << "W, w: to toggle wireframe mode." << endl;
   cout << "V, v: to switch between 1 and 4 views." << endl;
   cout << "+   : to increase camera distance." << endl;
   cout << "-   : to decrease camera distance." << endl;

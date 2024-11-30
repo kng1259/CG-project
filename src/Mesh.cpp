@@ -671,7 +671,7 @@ void Mesh::DrawWireframe() {
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   for (int f = 0; f < numFaces; f++) {
     glBegin(GL_POLYGON);
-    glColor3f(1, 1, 1);
+    glColor3f(0, 0, 0);
     for (int v = 0; v < face[f].nVerts; v++) {
       int iv = face[f].vert[v].vertIndex;
 
