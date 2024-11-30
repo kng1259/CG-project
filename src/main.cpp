@@ -6,6 +6,7 @@
 #include <GL/glu.h>
 #include <iostream>
 #include <math.h>
+#include <unistd.h>
 
 #define PI 3.1415926
 #define DEG2RAD(x) (x * PI) / 180.0f
@@ -31,6 +32,12 @@ void drawAxis() {
   glVertex3f(0, 0, 4);
   glEnd();
 }
+
+// wheel rotation parameters
+float translatezf = 0.0;
+float rotatef = 0.0;
+bool bRotate = false;
+bool bPlus = true;
 
 void drawObject() {
   // translate whole object so its bottom is on Oxz plane
@@ -76,22 +83,19 @@ void drawObject() {
   glPushMatrix();
   glTranslatef(0.4, 0, 0);
   glRotatef(90, 0, 0, 1);
+  glRotatef(rotatef, 0, 1, 0);
   shape.CreateWheel(50, 5, 0.2, 1.5, 1, 0.5, 0.2);
   shape.DrawColor(5);
-  glPopMatrix();
 
   // Small cylinder
-  glPushMatrix();
-  glTranslatef(0.7, 0, 0);
-  glRotatef(90, 0, 0, 1);
-  glTranslatef(-1.4, 0, 0);
+  glTranslatef(-1.3, -0.3, 0);
   shape.CreateCylinder(50, 0.6, 0.1);
   shape.DrawColor(4);
   glPopMatrix();
 
   // Shape 4
   glPushMatrix();
-  glTranslatef(0.8, 0, 0);
+  glTranslatef(0.8, 0, translatezf);
   shape.CreateShape4(0.2, 0.4, 3.4, 0.2, 0.2, 3.2);
   shape.DrawColor(0);
   glPopMatrix();
@@ -107,10 +111,10 @@ void drawObject() {
 
   glPushMatrix();
   glRotatef(90, 1, 0, 0);
-  glTranslatef(0.8, 1.7, 0);
-  shape.CreateCylinder(50, 3.0, 0.1);
+  glTranslatef(0.8, 2.2 + translatezf, 0);
+  shape.CreateCylinder(50, 4.0, 0.1);
   shape.DrawColor(4);
-  glTranslatef(0, -3.4, 0);
+  glTranslatef(0, -4.4, 0);
   shape.DrawColor(4);
   glPopMatrix();
 
@@ -205,6 +209,8 @@ void changeCameraPos() {
   myDisplay();
 }
 
+void calcTranslate() { translatezf = 1.3 * sin(DEG2RAD(rotatef)); }
+
 void myKeyboard(unsigned char key, int x, int y) {
   switch (key) {
   // Code here
@@ -220,9 +226,30 @@ void myKeyboard(unsigned char key, int x, int y) {
     camera_dis -= 0.1;
     changeCameraPos();
     break;
+  case '1':
+    rotatef -= 1;
+    calcTranslate();
+    break;
+  case '2':
+    rotatef += 1;
+    calcTranslate();
+    break;
+  case 'a':
+  case 'A':
+    bRotate = !bRotate;
+    break;
+  case 'b':
+  case 'B':
+    bPlus = !bPlus;
+    break;
+  case 27:
+    bRotate = false;
+    exit(0);
   }
+
   glutPostRedisplay();
 }
+
 void mySpecialKeyboard(int theKey, int mouseX, int mouseY) {
   // code here
   switch (theKey) {
@@ -245,27 +272,62 @@ void mySpecialKeyboard(int theKey, int mouseX, int mouseY) {
   }
 }
 
+void myIdle() {
+  if (bRotate) {
+    if (bPlus)
+      rotatef += 1;
+    else
+      rotatef -= 1;
+    calcTranslate();
+  }
+  glutPostRedisplay();
+}
+
+void setLight() {
+  GLfloat lightIntensity[] = {0.7f, 0.7f, 0.7f, 1.0f};
+  GLfloat light_position[] = {10, 10, 20.0f, 0.0f};
+  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, lightIntensity);
+
+  GLfloat light_position1[] = {10, 10, -20.0f, 0.0f};
+  glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+  glLightfv(GL_LIGHT1, GL_DIFFUSE, lightIntensity);
+
+  GLfloat light_position2[] = {0, -10, 0.0f, 0.0f};
+  glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
+  glLightfv(GL_LIGHT2, GL_DIFFUSE, lightIntensity);
+
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  glEnable(GL_LIGHT1);
+
+  glShadeModel(GL_SMOOTH);
+}
+
 int main(int argc, char *argv[]) {
+  cout << "1, 2: to rotate the wheel." << endl;
+  cout << "A, a: to toggle rotating the wheel." << endl;
+  cout << "B, b: to change auto wheel rotation direction." << endl;
   cout << "V, v: to switch between 1 and 4 views." << endl;
   cout << "+   : to increase camera distance." << endl;
   cout << "-   : to decrease camera distance." << endl;
-  cout << "up arrow  : to increase camera height." << endl;
-  cout << "down arrow: to decrease camera height." << endl;
-  cout << "<-        : to rotate camera clockwise." << endl;
-  cout << "->        : to rotate camera counterclockwise." << endl;
+  cout << "up  : to increase camera height." << endl;
+  cout << "down: to decrease camera height." << endl;
+  cout << "<-  : to rotate camera clockwise." << endl;
+  cout << "->  : to rotate camera counterclockwise." << endl;
 
   glutInit(&argc, (char **)argv); // initialize the tool kit
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB |
                       GLUT_DEPTH);               // set the display mode
   glutInitWindowSize(screenWidth, screenHeight); // set window size
   // glutInitWindowPosition(500, 500);                         // set window
-  // position on screen
   glutCreateWindow("Project"); // open the screen window
   myInit();
 
   glutKeyboardFunc(myKeyboard);
   glutDisplayFunc(myDisplay);
   glutSpecialFunc(mySpecialKeyboard);
+  glutIdleFunc(myIdle);
 
   glutMainLoop();
 }
