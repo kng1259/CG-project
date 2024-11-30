@@ -33,6 +33,32 @@ void drawAxis() {
   glEnd();
 }
 
+void setMaterial(float dr, float dg, float db, float ar = 0.1, float ag = 0.1,
+                 float ab = 0.1, float sr = 1, float sg = 1, float sb = 1) {
+  GLfloat ambient[4];
+  GLfloat diffuse[4];
+  GLfloat specular[4];
+  GLfloat shiness = 100.8;
+
+  ambient[0] = ar;
+  ambient[1] = ag;
+  ambient[2] = ab;
+  ambient[3] = 1;
+  diffuse[0] = dr;
+  diffuse[1] = dg;
+  diffuse[2] = db;
+  diffuse[3] = 1;
+  specular[0] = sr;
+  specular[1] = sg;
+  specular[2] = sb;
+  specular[3] = 1;
+
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shiness);
+}
+
 // wheel rotation parameters
 float translatezf = 0.0;
 float rotatef = 0.0;
@@ -77,12 +103,15 @@ void drawObject() {
   glPushMatrix();
   glRotatef(90, 1, 0, 0);
   glRotatef(90, 0, 1, 0);
-  shape.CreateShape2(0.8, 0.3, 0.5, 4.0, 0.3);
+  glTranslatef(0, -1, 0);
+  shape.CreateShape2(0.8, 0.3, 0.5, 2.0, 0.3);
   if (bWireFrame)
     shape.DrawWireframe();
   else
     shape.DrawColor(3);
   glRotatef(180, 1, 0, 0);
+  glTranslatef(0, -2, 0);
+  setMaterial(1, 1, 0);
   if (bWireFrame)
     shape.DrawWireframe();
   else
@@ -171,10 +200,22 @@ float lookAt_X, lookAt_Y, lookAt_Z;
 
 bool b4View = false;
 
-void myInit() {
-  float fHalfSize = 3;
+const GLfloat lightColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
+const GLfloat lightAmbColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
+const GLfloat lightPos[] = {-5.0, 0.0, 5.0, 0.0};
 
+void myInit() {
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_LIGHT0);
+  glEnable(GL_COLOR_MATERIAL);
+  glEnable(GL_NORMALIZE);
+  glShadeModel(GL_SMOOTH);
+
+  // set up the light
+  glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbColor);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, lightColor);
+  glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
 
   camera_angle = 60.0;
   camera_height = 4.0;
@@ -327,27 +368,6 @@ void myIdle() {
     calcTranslate();
   }
   glutPostRedisplay();
-}
-
-void setLight() {
-  GLfloat lightIntensity[] = {0.7f, 0.7f, 0.7f, 1.0f};
-  GLfloat light_position[] = {10, 10, 20.0f, 0.0f};
-  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, lightIntensity);
-
-  GLfloat light_position1[] = {10, 10, -20.0f, 0.0f};
-  glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
-  glLightfv(GL_LIGHT1, GL_DIFFUSE, lightIntensity);
-
-  GLfloat light_position2[] = {0, -10, 0.0f, 0.0f};
-  glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
-  glLightfv(GL_LIGHT2, GL_DIFFUSE, lightIntensity);
-
-  glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
-  glEnable(GL_LIGHT1);
-
-  glShadeModel(GL_SMOOTH);
 }
 
 int main(int argc, char *argv[]) {
