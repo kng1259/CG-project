@@ -3,7 +3,12 @@
 
 #include "../include/Mesh.h"
 #include <GL/gl.h>
+#include <GL/glu.h>
+#include <iostream>
 #include <math.h>
+
+#define PI 3.1415926
+#define DEG2RAD(x) (x * PI) / 180.0f
 
 using namespace std;
 
@@ -26,111 +31,11 @@ void drawAxis() {
   glVertex3f(0, 0, 4);
   glEnd();
 }
-void myDisplay() {
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  gluLookAt(4.5, 4, 2, 0, 0, 0, 0, 1, 0);
 
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glViewport(0, 0, screenWidth / 2, screenHeight);
-
-  drawAxis();
-
-  glColor3f(0, 0, 0);
-
-  shape.DrawWireframe();
-
-  glViewport(screenWidth / 2, 0, screenWidth / 2, screenHeight);
-
-  drawAxis();
-  shape.DrawColor(1);
-
-  glFlush();
-  glutSwapBuffers();
-}
-
-void myInit() {
-  float fHalfSize = 4;
-
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-  glFrontFace(GL_CCW);
-  glEnable(GL_DEPTH_TEST);
-
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(-fHalfSize, fHalfSize, -fHalfSize, fHalfSize, -1000, 1000);
-}
-
-// int main(int argc, char *argv[])
-// {
-//     cout << "1. Tetrahedron" << endl;
-//     cout << "2. Cube" << endl;
-//     cout << "3. Cylinder" << endl;
-//     cout << "4. Cuboid" << endl;
-//     cout << "5. Hollow Cylinder" << endl;
-//     cout << "6. Shape 1" << endl;
-//     cout << "7. Shape 2" << endl;
-//     cout << "8. Shape 3" << endl;
-//     cout << "9. Shape 4" << endl;
-//     cout << "Input the choice: " << endl;
-//     cin >> nChoice;
-
-//     glutInit(&argc, (char **)argv);                           // initialize
-//     the tool kit glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); //
-//     set the display mode glutInitWindowSize(screenWidth, screenHeight); //
-//     set window size glutInitWindowPosition(500, 500); // set window position
-//     on screen glutCreateWindow("Lab 2");                                //
-//     open the screen window
-
-//     switch (nChoice)
-//     {
-//     case 1:
-//         shape.CreateTetrahedron();
-//         break;
-//     case 2:
-//         shape.CreateCube(1);
-//         break;
-//     case 3:
-//         shape.CreateCylinder(4, 2, 1);
-//         break;
-//     case 4:
-//         shape.CreateCuboid(1, 2, 1.5);
-//         break;
-//     case 5:
-//         shape.CreateCylinderWithHole(20, 3, 1.5, 1);
-//         break;
-//     case 6:
-//         shape.CreateShape1(2, 2, 1, 1, 4, 1, 0.2);
-//         break;
-//     case 7:
-//         shape.CreateShape2(2, 1, 1, 4, 1);
-//         break;
-//     case 8:
-//         shape.CreateWheel(100, 5, 1, 3, 2, 0.7, 0.2);
-//         break;
-//     case 9:
-//         shape.CreateShape4(2, 2, 4, 1, 1, 3);
-//         break;
-//     }
-
-//     myInit();
-//     glutDisplayFunc(myDisplay);
-
-//     glutMainLoop();
-//     return 0;
-// }
-
-void projDisplay() {
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  // gluLookAt(8, 0, 0, 0, 0, 1, 0, 0, 1);
-  gluLookAt(8, 4, 4, 0, 1, 0, 0, 1, 0);
-  // gluLookAt(4.5, 4, 2, 0, 0, 0, 0, 1, 0);
-
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  drawAxis();
+void drawObject() {
+  // translate whole object so its bottom is on Oxz plane
+  glPushMatrix();
+  glTranslatef(0, 2.5, 0);
 
   // Base
   // Box
@@ -209,12 +114,146 @@ void projDisplay() {
   shape.DrawColor(4);
   glPopMatrix();
 
-  // Reset the viewpoint
+  glPopMatrix();
+}
+
+float camera_angle;
+float camera_height;
+float camera_dis;
+float camera_X, camera_Y, camera_Z;
+float lookAt_X, lookAt_Y, lookAt_Z;
+
+bool b4View = false;
+
+void myInit() {
+  float fHalfSize = 3;
+
+  glEnable(GL_DEPTH_TEST);
+
+  camera_angle = 60.0;
+  camera_height = 4.0;
+  camera_dis = 11;
+  camera_X = sin(DEG2RAD(camera_angle)) * camera_dis;
+  camera_Y = camera_height;
+  camera_Z = cos(DEG2RAD(camera_angle)) * camera_dis;
+
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void mySetupCameraVolume(int nType) {
+  if (nType == 4) {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    gluPerspective(60.0f, (GLfloat)screenWidth / (GLfloat)screenHeight, 1.0f,
+                   1000.0f);
+  } else if (nType == 1) {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-5, 5, -5, 5, -1000, 1000);
+  } else if (nType == 2) {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-5, 5, -5, 5, -1000, 1000);
+  } else if (nType == 3) {
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-5, 5, -5, 5, -1000, 1000);
+  }
+}
+
+void DisplayOneView(int nType, int left, int right, int top, int bottom) {
+  mySetupCameraVolume(nType);
+  glViewport(left, top, right - left, bottom - top);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  // code here
+  if (nType == 1)
+    gluLookAt(0, camera_dis, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+  else if (nType == 2)
+    gluLookAt(0, 0.0, camera_dis, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+  else if (nType == 3)
+    gluLookAt(camera_dis, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+  else
+    gluLookAt(camera_X, camera_Y, camera_Z, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+  drawObject();
+}
+
+void myDisplay() {
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  if (b4View == false) {
+    DisplayOneView(4, 0, screenWidth, 0, screenHeight);
+  } else {
+    // code here
+    DisplayOneView(1, 0, screenWidth / 2, 0, screenHeight / 2);
+    DisplayOneView(2, 0, screenWidth / 2, screenHeight / 2, screenHeight);
+    DisplayOneView(3, screenWidth / 2, screenWidth, screenHeight / 2,
+                   screenHeight);
+    DisplayOneView(4, screenWidth / 2, screenWidth, 0, screenHeight / 2);
+    //
+  }
   glFlush();
   glutSwapBuffers();
 }
 
+void changeCameraPos() {
+  camera_X = sin(DEG2RAD(camera_angle)) * camera_dis;
+  camera_Y = camera_height;
+  camera_Z = cos(DEG2RAD(camera_angle)) * camera_dis;
+  myDisplay();
+}
+
+void myKeyboard(unsigned char key, int x, int y) {
+  switch (key) {
+  // Code here
+  case 'V':
+  case 'v':
+    b4View = !b4View;
+    break;
+  case '+':
+    camera_dis += 0.1;
+    changeCameraPos();
+    break;
+  case '-':
+    camera_dis -= 0.1;
+    changeCameraPos();
+    break;
+  }
+  glutPostRedisplay();
+}
+void mySpecialKeyboard(int theKey, int mouseX, int mouseY) {
+  // code here
+  switch (theKey) {
+  case GLUT_KEY_UP:
+    camera_height += 0.1;
+    changeCameraPos();
+    break;
+  case GLUT_KEY_DOWN:
+    camera_height -= 0.1;
+    changeCameraPos();
+    break;
+  case GLUT_KEY_LEFT:
+    camera_angle += 1;
+    changeCameraPos();
+    break;
+  case GLUT_KEY_RIGHT:
+    camera_angle -= 1;
+    changeCameraPos();
+    break;
+  }
+}
+
 int main(int argc, char *argv[]) {
+  cout << "V, v: to switch between 1 and 4 views." << endl;
+  cout << "+   : to increase camera distance." << endl;
+  cout << "-   : to decrease camera distance." << endl;
+  cout << "up arrow  : to increase camera height." << endl;
+  cout << "down arrow: to decrease camera height." << endl;
+  cout << "<-        : to rotate camera clockwise." << endl;
+  cout << "->        : to rotate camera counterclockwise." << endl;
+
   glutInit(&argc, (char **)argv); // initialize the tool kit
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB |
                       GLUT_DEPTH);               // set the display mode
@@ -223,6 +262,10 @@ int main(int argc, char *argv[]) {
   // position on screen
   glutCreateWindow("Project"); // open the screen window
   myInit();
-  glutDisplayFunc(projDisplay);
+
+  glutKeyboardFunc(myKeyboard);
+  glutDisplayFunc(myDisplay);
+  glutSpecialFunc(mySpecialKeyboard);
+
   glutMainLoop();
 }
