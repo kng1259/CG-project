@@ -702,8 +702,70 @@ void Mesh::DrawColor(int color) {
       // ic = f % COLORNUM;
 
       glColor3f(ColorArr[ic][0], ColorArr[ic][1], ColorArr[ic][2]);
+      glNormal3f(vertNorm[v].x, vertNorm[v].y, vertNorm[v].z);
       glVertex3f(pt[iv].x, pt[iv].y, pt[iv].z);
     }
     glEnd();
+  }
+}
+
+Point3 *calculateCrossProduct(Point3 a, Point3 b, Point3 c) {
+  Point3 *result = new Point3();
+  result->x = (b.y - a.y) * (c.z - a.z) - (b.z - a.z) * (c.y - a.y);
+  result->y = (b.z - a.z) * (c.x - a.x) - (b.x - a.x) * (c.z - a.z);
+  result->z = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+  return result;
+}
+
+Point3 *normalize(Point3 *a) {
+  float length = sqrt(a->x * a->x + a->y * a->y + a->z * a->z);
+  Point3 *result = new Point3();
+  result->x = a->x / length;
+  result->y = a->y / length;
+  result->z = a->z / length;
+  return result;
+}
+
+void Mesh::CalculateFacesNorm(bool isInverted) {
+  faceNorm = new Point3[numFaces];
+  for (int i = 0; i < numFaces; i++) {
+    int numVert = face[i].nVerts;
+    int vert1 = face[i].vert[0].vertIndex;
+    int vert2 = face[i].vert[1].vertIndex;
+    int vert3 = face[i].vert[2].vertIndex;
+    Point3 *cross = calculateCrossProduct(pt[vert1], pt[vert2], pt[vert3]);
+    Point3 *norm = normalize(cross);
+    if (isInverted) {
+      faceNorm[i].x = -norm->x;
+      faceNorm[i].y = -norm->y;
+      faceNorm[i].z = -norm->z;
+    } else {
+      faceNorm[i].x = norm->x;
+      faceNorm[i].y = norm->y;
+      faceNorm[i].z = norm->z;
+    }
+    delete cross;
+    delete norm;
+  }
+}
+
+void Mesh::CalculateVertsNorm() {
+  Point3 temp;
+  vertNorm = new Point3[numVerts];
+  for (int i = 0; i < numFaces; i++) {
+    temp.set(faceNorm[i].x, faceNorm[i].y, faceNorm[i].z);
+    for (int j = 0; j < face[i].nVerts; j++) {
+      int vertIdx = face[i].vert[j].vertIndex;
+      vertNorm[vertIdx].set(vertNorm[vertIdx].x + temp.x,
+                            vertNorm[vertIdx].y + temp.y,
+                            vertNorm[vertIdx].z + temp.z);
+    }
+  }
+
+  Point3 *norm;
+  for (int i = 0; i < numVerts; i++) {
+    norm = normalize(&vertNorm[i]);
+    vertNorm[i].set(norm->x, norm->y, norm->z);
+    delete norm;
   }
 }

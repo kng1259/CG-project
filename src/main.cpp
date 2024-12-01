@@ -75,9 +75,12 @@ void drawObject() {
 
   // Base
   // Box
+  setMaterial(0, 1, 0);
   glPushMatrix();
   glTranslatef(0, -2.3, 0);
   shape.CreateCuboid(1.0, 0.2, 3);
+  shape.CalculateFacesNorm();
+  shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
   else
@@ -85,8 +88,11 @@ void drawObject() {
   glPopMatrix();
 
   // Shape 1
+  setMaterial(0, 0, 1);
   glPushMatrix();
   shape.CreateShape1(0.5, 0.6, 0.3, 0.4, 3, 0.4, 0.2);
+  shape.CalculateFacesNorm(true);
+  shape.CalculateVertsNorm();
   glTranslatef(0, 0, -2.5);
   if (bWireFrame)
     shape.DrawWireframe();
@@ -100,18 +106,20 @@ void drawObject() {
   glPopMatrix();
 
   // Shape 2
+  setMaterial(1, 1, 0);
   glPushMatrix();
   glRotatef(90, 1, 0, 0);
   glRotatef(90, 0, 1, 0);
   glTranslatef(0, -1, 0);
   shape.CreateShape2(0.8, 0.3, 0.5, 2.0, 0.3);
+  shape.CalculateFacesNorm();
+  shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
   else
     shape.DrawColor(3);
   glRotatef(180, 1, 0, 0);
   glTranslatef(0, -2, 0);
-  setMaterial(1, 1, 0);
   if (bWireFrame)
     shape.DrawWireframe();
   else
@@ -119,10 +127,13 @@ void drawObject() {
   glPopMatrix();
 
   // Cylinder
+  setMaterial(0.5, 0.5, 0.5);
   glPushMatrix();
   glTranslatef(0.3, 0, 0);
   glRotatef(90, 0, 0, 1);
   shape.CreateCylinder(50, 0.6, 0.2);
+  shape.CalculateFacesNorm();
+  shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
   else
@@ -130,19 +141,25 @@ void drawObject() {
   glPopMatrix();
 
   // Wheel
+  setMaterial(0, 1, 1);
   glPushMatrix();
   glTranslatef(0.4, 0, 0);
   glRotatef(90, 0, 0, 1);
   glRotatef(rotatef, 0, 1, 0);
   shape.CreateWheel(50, 5, 0.2, 1.5, 1, 0.5, 0.2);
+  shape.CalculateFacesNorm();
+  shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
   else
     shape.DrawColor(5);
 
   // Small cylinder
+  setMaterial(1, 0, 1);
   glTranslatef(-1.3, -0.3, 0);
   shape.CreateCylinder(20, 0.6, 0.1);
+  shape.CalculateFacesNorm(true);
+  shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
   else
@@ -150,9 +167,12 @@ void drawObject() {
   glPopMatrix();
 
   // Shape 4
+  setMaterial(1, 0, 0);
   glPushMatrix();
   glTranslatef(0.8, 0, translatezf);
   shape.CreateShape4(0.2, 0.4, 3.4, 0.2, 0.2, 3.2);
+  shape.CalculateFacesNorm(true);
+  shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
   else
@@ -160,9 +180,12 @@ void drawObject() {
   glPopMatrix();
 
   // Support
+  setMaterial(0, 1, 0);
   glPushMatrix();
   glTranslatef(0.55, 0, 2.5);
   shape.CreateCuboid(0.45, 0.15, 0.15);
+  shape.CalculateFacesNorm();
+  shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
   else
@@ -174,10 +197,13 @@ void drawObject() {
     shape.DrawColor(1);
   glPopMatrix();
 
+  setMaterial(1, 0, 1);
   glPushMatrix();
   glRotatef(90, 1, 0, 0);
   glTranslatef(0.8, 2.2 + translatezf, 0);
   shape.CreateCylinder(20, 4.0, 0.1);
+  shape.CalculateFacesNorm();
+  shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
   else
@@ -202,13 +228,13 @@ bool b4View = false;
 
 const GLfloat lightColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
 const GLfloat lightAmbColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
-const GLfloat lightPos[] = {-5.0, 0.0, 5.0, 0.0};
+const GLfloat lightPos[] = {0.0, 15.0, -15.0, 1.0};
 
 void myInit() {
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
   glEnable(GL_COLOR_MATERIAL);
-  glEnable(GL_NORMALIZE);
   glShadeModel(GL_SMOOTH);
 
   // set up the light

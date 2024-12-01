@@ -35,6 +35,9 @@ public:
   int numFaces;
   Face *face;
 
+  Point3 *faceNorm;
+  Point3 *vertNorm;
+
 public:
   Mesh() {
     numVerts = 0;
@@ -69,6 +72,9 @@ public:
                    float fOIRadius, float fIORadius, float fIIRadius);
   void CreateShape4(float fOx, float fOz, float fOy, float fIx, float fIz,
                     float fIy);
+
+  void CalculateFacesNorm(bool isInverted = false);
+  void CalculateVertsNorm();
 };
 
 #endif
