@@ -13,7 +13,8 @@ INCLUDES = -Iinclude
 LIBS = -lGL -lGLU -lglut
 
 # Source files
-SRCS = src/main.cpp src/Mesh.cpp src/supportClass.cpp
+# SRCS = src/main.cpp src/Mesh.cpp src/supportClass.cpp
+SRCS = src/assignment-2212318.cpp
 
 # Object directory
 OBJDIR = obj
