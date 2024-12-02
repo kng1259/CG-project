@@ -702,7 +702,7 @@ void Mesh::DrawColor(int color) {
       // ic = f % COLORNUM;
 
       glColor3f(ColorArr[ic][0], ColorArr[ic][1], ColorArr[ic][2]);
-      glNormal3f(vertNorm[v].x, vertNorm[v].y, vertNorm[v].z);
+      glNormal3f(vertNorm[iv].x, vertNorm[iv].y, vertNorm[iv].z);
       glVertex3f(pt[iv].x, pt[iv].y, pt[iv].z);
     }
     glEnd();
@@ -761,7 +761,6 @@ void Mesh::CalculateVertsNorm() {
                             vertNorm[vertIdx].z + temp.z);
     }
   }
-
   Point3 *norm;
   for (int i = 0; i < numVerts; i++) {
     norm = normalize(&vertNorm[i]);
