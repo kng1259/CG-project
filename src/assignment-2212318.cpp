@@ -975,7 +975,6 @@ Point3 *normalize(Point3 *a) {
 void Mesh::CalculateFacesNorm(bool isInverted) {
   faceNorm = new Point3[numFaces];
   for (int i = 0; i < numFaces; i++) {
-    int numVert = face[i].nVerts;
     int vert1 = face[i].vert[0].vertIndex;
     int vert2 = face[i].vert[1].vertIndex;
     int vert3 = face[i].vert[2].vertIndex;
@@ -1007,7 +1006,6 @@ void Mesh::CalculateVertsNorm() {
                             vertNorm[vertIdx].z + temp.z);
     }
   }
-
   Point3 *norm;
   for (int i = 0; i < numVerts; i++) {
     norm = normalize(&vertNorm[i]);
@@ -1018,6 +1016,8 @@ void Mesh::CalculateVertsNorm() {
 
 #define PI 3.1415926
 #define DEG2RAD(x) (x * PI) / 180.0f
+
+using namespace std;
 
 int screenWidth = 1000;
 int screenHeight = 1000;
@@ -1085,7 +1085,7 @@ void drawObject() {
   glPushMatrix();
   glTranslatef(0, -2.3, 0);
   shape.CreateCuboid(1.0, 0.2, 3);
-  shape.CalculateFacesNorm(true);
+  shape.CalculateFacesNorm();
   shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
@@ -1126,7 +1126,7 @@ void drawObject() {
     shape.DrawColor(3);
   glRotatef(180, 1, 0, 0);
   glTranslatef(0, -2, 0);
-  shape.CalculateFacesNorm();
+  shape.CalculateFacesNorm(true);
   shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
@@ -1140,7 +1140,7 @@ void drawObject() {
   glTranslatef(0.3, 0, 0);
   glRotatef(90, 0, 0, 1);
   shape.CreateCylinder(50, 0.6, 0.2);
-  shape.CalculateFacesNorm(true);
+  shape.CalculateFacesNorm();
   shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
@@ -1217,6 +1217,8 @@ void drawObject() {
   else
     shape.DrawColor(4);
   glTranslatef(0, -4.4, 0);
+  shape.CalculateFacesNorm();
+  shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
   else
@@ -1236,7 +1238,7 @@ bool b4View = false;
 
 const GLfloat lightColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
 const GLfloat lightAmbColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
-const GLfloat lightPos[] = {15.0, 15.0, -15.0, 1.0};
+const GLfloat lightPos[] = {5.0, 10.0, -5.0, 0.0};
 
 void myInit() {
   glEnable(GL_DEPTH_TEST);

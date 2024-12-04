@@ -79,7 +79,7 @@ void drawObject() {
   glPushMatrix();
   glTranslatef(0, -2.3, 0);
   shape.CreateCuboid(1.0, 0.2, 3);
-  shape.CalculateFacesNorm(true);
+  shape.CalculateFacesNorm();
   shape.CalculateVertsNorm();
   if (bWireFrame)
     shape.DrawWireframe();
@@ -232,7 +232,7 @@ bool b4View = false;
 
 const GLfloat lightColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
 const GLfloat lightAmbColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
-const GLfloat lightPos[] = {8.0, 8.0, -8.0, 0.0};
+const GLfloat lightPos[] = {5.0, 10.0, -5.0, 0.0};
 
 void myInit() {
   glEnable(GL_DEPTH_TEST);
